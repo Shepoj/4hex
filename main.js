@@ -20,11 +20,11 @@ for (let i = 0; i < 13; i++){
         }
         else { 
             if ((i==0) || (i==12)){
-                grid[i].push(new Cell(i,j,3));
+                grid[i].push(new Cell(i,j,4));
             }
             else {
                 if ((j==0) || (j==12)){
-                    grid[i].push(new Cell(i,j,4));
+                    grid[i].push(new Cell(i,j,3));
                 }
                 else {
                     grid[i].push(new Cell(i,j,0));
@@ -35,7 +35,7 @@ for (let i = 0; i < 13; i++){
 }
 
 function drawGrid(){
-    for (let i = 0; i < 13; i++){
+    for (let i = 0; i < 13; i++){  //final : remplacer 0 par 1 et 13 par 12 pour le swag
         for (let j = 0; j < 13; j++){
             ctx.fillStyle = grid[i][j].color;
             ctx.fillRect(i*50+(grid[i][j].y*25),j*50,50,50);
@@ -44,11 +44,10 @@ function drawGrid(){
 }
 
 canvas.addEventListener("click", function(event) {
-    let x = event.clientX - canvas.offsetLeft;
     let y = event.clientY - canvas.offsetTop;
+    let x = event.clientX - canvas.offsetLeft-Math.floor((y/50)*25);
     let i = Math.floor(x/50);
     let j = Math.floor(y/50);
-    i=i-Math.floor((grid[i][j].y)/2);
     console.log(i,j);
     if (grid[i][j].state == 0){
         grid[i][j].state = 1;

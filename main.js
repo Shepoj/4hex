@@ -1,12 +1,13 @@
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
+let player = 0;
+let colors = ["#ffffff","#ff0000", "#0000ff", "#ff0000", "#0000ff",  "#00ff00"]
 
 class Cell{
     constructor(x,y,state){
         this.x = x;
         this.y = y;
         this.state = state;
-        let colors = ["#ffffff","#ff0000", "#0000ff", "#ff0000", "#0000ff",  "#00ff00"];
         this.color = colors[state];
     }
 }
@@ -39,21 +40,31 @@ function drawGrid(){
         for (let j = 0; j < 13; j++){
             ctx.fillStyle = grid[i][j].color;
             ctx.fillRect(i*50+(grid[i][j].y*25),j*50,50,50);
+            ctx.fillStyle = 'black';
+            ctx.fillRect(i*50+(grid[i][j].y*25),j*50,1,50);
+            ctx.fillRect(i*50+(grid[i][j].y*25),j*50,50,1);
         }
     }
 }
 
 canvas.addEventListener("click", function(event) {
     let y = event.clientY - canvas.offsetTop;
-    let x = event.clientX - canvas.offsetLeft-Math.floor((y/50)*25);
+    let x = event.clientX - canvas.offsetLeft - Math.floor((y/50)*25);
     let i = Math.floor(x/50);
     let j = Math.floor(y/50);
     console.log(i,j);
     if (grid[i][j].state == 0){
-        grid[i][j].state = 1;
-        grid[i][j].color = "#ff0000";
+        grid[i][j].state = player;
+        grid[i][j].color = colors[player];
+    }
+    if (player==1){
+        player=2;
+    }
+    else { 
+        player=1; 
     }
     drawGrid();
+    console.log(player);
 });
 
 drawGrid();

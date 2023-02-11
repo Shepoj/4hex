@@ -1,0 +1,7 @@
+etats :
+ 0 : vide
+ 1 : rempli p1
+ 2 : rempli p2
+ 3 : bord p1
+ 4 : bord p2
+ 5 : bord des 2

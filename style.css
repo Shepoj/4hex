@@ -1,0 +1,15 @@
+p {
+    font-size: xx-large;
+    font-family: 'Poiret One', cursive;
+    color: "white";
+
+  }
+  footer{ 
+    padding: 10px 20px;
+    bottom: 0;
+    align-items: right;
+  }
+  body{
+    align-items: center;
+    text-align: center;
+  }

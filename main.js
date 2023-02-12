@@ -9,6 +9,8 @@ class Cell{
         this.y = y;
         this.state = state;
         this.color = colors[state];
+        this.voisins = [];
+        this.estRelie = false;
     }
 }
 
@@ -35,6 +37,50 @@ for (let i = 0; i < 13; i++){
     }
 }
 
+function updateVoisins(){
+    for (let i = 1; i < 12; i++){
+        for (let j = 1; j < 12; j++){
+            grid[i][j].voisins = [grid[i-1][j],grid[i-1][j+1],grid[i+1][j],grid[i+1][j-1],grid[i][j+1],grid[i][j-1]];
+        }
+    }
+}
+
+function check(i,j){
+    for (let k = 0; k < 6; k++){
+        if (grid[i][j].voisins[k].state == 5){
+            grid[i][j].estRelie = true;
+        }
+        if (grid[i][j].voisins[k].estRelie == true && grid[i][j].voisins[k].state == grid[i][j].state){
+            grid[i][j].estRelie = true;
+        }
+        if ((grid[i][j].voisins[k].state == 3 || grid[i][j].voisins[k].state == 4) && (grid[i][j].voisins[k].state - 2 == grid[i][j].state)){
+            grid[i][j].estRelie = true;
+        }
+    }
+}
+
+function verifN(self){
+    for(let i = 0; i < 6; i++){
+        if (self.voisins[i].color == self.color  && self.voisins[i].estRelie != true){  //lui est vrai donc check les autres
+            self.voisins[i].estRelie = true;
+            verifN(self.voisins[i]);
+        }
+    }
+}
+
+function victoryCheck(){
+    for (let i = 1; i < 12; i++){
+        if (grid[i][0].estRelie == true){
+            console.log("Victoire du joueur 1");
+        }
+    }
+    for (let j = 1; j < 12; j++){
+        if (grid[0][j].estRelie == true){
+            console.log("Victoire du joueur 2");
+        }
+    }
+}
+
 function drawGrid(){
     for (let i = 0; i < 13; i++){  //final : remplacer 0 par 1 et 13 par 12 pour le swag
         for (let j = 0; j < 13; j++){
@@ -49,10 +95,10 @@ function drawGrid(){
 
 canvas.addEventListener("click", function(event) {
     let y = event.clientY - canvas.offsetTop;
-    let x = event.clientX - canvas.offsetLeft - Math.floor((y/50)*25);
-    let i = Math.floor(x/50);
+    let x = event.clientX - canvas.offsetLeft - Math.round(y*25/50);
+    let i = Math.round(x/50);
     let j = Math.floor(y/50);
-    console.log(i,j);
+    console.log(x,i,y,j);
     if (grid[i][j].state == 0){
         grid[i][j].state = player;
         grid[i][j].color = colors[player];
@@ -63,8 +109,10 @@ canvas.addEventListener("click", function(event) {
     else { 
         player=1; 
     }
+    updateVoisins();
+    check(i,j);
+    victoryCheck();
     drawGrid();
-    console.log(player);
 });
 
 drawGrid();

@@ -2,7 +2,7 @@ let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 let player = 1;
 let op = 2;
-let colors = ["#ffffff","#ff0000", "#0000ff", "#ff0000", "#0000ff",  "#00ff00"]
+let colors = ["#ffffff","#f81717", "#1db6f0", "#f81717", "#1db6f0",  "#660099"]
 
 class Cell{
     constructor(x,y,state){

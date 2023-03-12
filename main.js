@@ -39,7 +39,10 @@ for (let i = 0; i < 13; i++){
 }
 
 function updateVoisins(){
-    
+    grid[0][0].voisins = [grid[0][1],grid[1][0],grid[1][1]];
+    grid[0][12].voisins = [grid[0][11],grid[1][11],grid[1][12]];
+    grid[12][0].voisins = [grid[11][0],grid[11][1],grid[12][1]];
+    grid[12][12].voisins = [grid[11][11],grid[11][12],grid[12][11]];
     for (let i = 1; i < 12; i++){
         grid[i][0].voisins = [grid[i-1][0],grid[i+1][0],grid[i-1][1],grid[i][1]];
         grid[i][12].voisins = [grid[i-1][12],grid[i+1][12],grid[i-1][11],grid[i][11]];

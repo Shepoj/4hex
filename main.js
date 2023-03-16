@@ -2,7 +2,7 @@ let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 let player = 1;
 let op = 2;
-let colors = ["#ffffff","#f81717", "#1db6f0", "#f81717", "#1db6f0",  "#660099"]
+let colors = ["#ffffff","#f81717", "#1db6f0", "#f81717", "#1db6f0","#f81717", "#1db6f0",  "#660099"]
 
 class Cell{
     constructor(x,y,state){
@@ -11,7 +11,8 @@ class Cell{
         this.state = state;
         this.color = colors[state];
         this.voisins = [];
-        this.estRelie = false;
+        this.estRelieG = false;
+		this.estRelieD = false;
     }
 }
 
@@ -20,15 +21,21 @@ for (let i = 0; i < 13; i++){
     grid.push([]);
     for (let j = 0; j < 13; j++){
         if ((i==0 && j==0) || (i==12 && j==12) || (i==0 && j==12) || (i==12 && j==0)){
-            grid[i].push(new Cell(i,j,5));
+            grid[i].push(new Cell(i,j,7));
         }
         else { 
-            if ((i==0) || (i==12)){
+            if (i==0){
                 grid[i].push(new Cell(i,j,4));
             }
+			else if (i==12){
+                grid[i].push(new Cell(i,j,6));
+            }
             else {
-                if ((j==0) || (j==12)){
+                if (j==0){
                     grid[i].push(new Cell(i,j,3));
+                }
+				else if (j==12){
+                    grid[i].push(new Cell(i,j,5));
                 }
                 else {
                     grid[i].push(new Cell(i,j,0));
@@ -56,53 +63,72 @@ function updateVoisins(){
 
 function check(i,j){
     for (let k = 0; k < 6; k++){
-        if (grid[i][j].voisins[k].state == 5){
-            grid[i][j].estRelie = true;
-            verifN(grid[i][j]);
+        if (grid[i][j].voisins[k].state == 7){
+            {}
         }
-        if (grid[i][j].voisins[k].estRelie == true && grid[i][j].voisins[k].state == grid[i][j].state){
-            grid[i][j].estRelie = true;
-            verifN(grid[i][j]);
+        else if ((grid[i][j].voisins[k].state == 3 || grid[i][j].voisins[k].state == 4) && grid[i][j].voisins[k].color === grid[i][j].color){
+			verifG(grid[i][j]);
+			console.log("gauche")
         }
-        if ((grid[i][j].voisins[k].state == 3 || grid[i][j].voisins[k].state == 4) && (grid[i][j].voisins[k].state - 2 == grid[i][j].state)){
-            grid[i][j].estRelie = true;
-            verifN(grid[i][j]);
+		else if ((grid[i][j].voisins[k].state == 5 || grid[i][j].voisins[k].state == 6) && grid[i][j].voisins[k].color === grid[i][j].color){
+			verifD(grid[i][j]);
+			console.log("droite")
+        }
+		else if (grid[i][j].voisins[k].estRelieD && grid[i][j].voisins[k].color==grid[i][j].color == colors[player]){
+			verifD(grid[i][j]);
+			console.log(grid[i][j])
+			if (grid[i][j].voisins[k].estRelieG && grid[i][j].voisins[k].color==grid[i][j].color == colors[player]){
+				verifG(grid[i][j]);
+				console.log(grid[i][j])
+			}
+		}
+		else if (grid[i][j].voisins[k].estRelieG && grid[i][j].voisins[k].color==grid[i][j].color == colors[player]){
+			verifG(grid[i][j]);
+			console.log(grid[i][j])
+			if (grid[i][j].voisins[k].estRelieD && grid[i][j].voisins[k].color==grid[i][j].color == colors[player]){
+				verifD(grid[i][j]);
+				console.log(grid[i][j])
+			}
+		}
+    }
+}
+
+function verifG(self){
+	self.estRelieG = true;
+    for(let i = 0; i < self.voisins.length; i++){
+        if (self.voisins[i].color == self.color  && self.voisins[i].estRelieG != true){  //lui est vrai donc check les autres   
+            verifG(self.voisins[i]);  
         }
     }
 }
 
-function verifN(self){
+
+function verifD(self){
+	self.estRelieD = true;
     for(let i = 0; i < self.voisins.length; i++){
-        if (self.voisins[i].color == self.color  && self.voisins[i].estRelie != true){  //lui est vrai donc check les autres
-            self.voisins[i].estRelie = true;   
-            verifN(self.voisins[i]);  
+        if (self.voisins[i].color == self.color  && self.voisins[i].estRelieD != true){  //lui est vrai donc check les autres
+            verifD(self.voisins[i]);  
         }
     }
 }
 
 function victoryCheck(){
     for (let i = 1; i < 12; i++){
-        if (grid[i][0].estRelie == true){
-            for (let i1 = 1; i1 < 12; i1++){
-                if (grid[i1][12].estRelie == true){
-                    console.log("Victoire du joueur 1");
-                }
-            }
+		if (grid[i][0].estRelieG == true && grid[i][0].estRelieD==true){
+			console.log("Victoire du joueur 1");
+            
         }
     }
     for (let j = 1; j < 12; j++){
-        if (grid[0][j].estRelie == true){
-            for (let j1 = 1; j1 < 12; j1++){
-                if (grid[12][j1].estRelie == true){
-                    console.log("Victoire du joueur 2");
-                }
-            }
+		if (grid[0][j].estRelieG == true && grid[0][j].estRelieD==true){
+			console.log("Victoire du joueur 2");
+            
         }
     }
 }
 
 function drawGrid(){
-    for (let i = 0; i < 13; i++){  //final : remplacer 0 par 1 et 13 par 12 pour le swag
+    for (let i = 0; i < 13; i++){  //final : remplacer 0 par 1 et 13 par 12 
         for (let j = 0; j < 13; j++){
             ctx.fillStyle = grid[i][j].color;
             ctx.fillRect(i*50+(grid[i][j].y*25),j*50,50,50);
@@ -114,6 +140,7 @@ function drawGrid(){
 }
 
 updateVoisins();
+console.log(grid[5][3]);
 drawGrid();
 
 canvas.addEventListener("click", function(event) {
@@ -125,18 +152,18 @@ canvas.addEventListener("click", function(event) {
     if (grid[i][j].state == 0){
         grid[i][j].state = player;
         grid[i][j].color = colors[player];
-    }
-    if (player==1){
-        op=1;
-        player=2;
-    }
-    else { 
-        op=2;
-        player=1; 
-    }
-    updateVoisins();
-    check(i,j);
-    victoryCheck();
+		updateVoisins();
+		check(i,j);
+		victoryCheck();
+		if (player==1){
+			op=1;
+			player=2;
+		}
+		else { 
+			op=2;
+			player=1; 
+		}
+	}
     drawGrid();
 });
 

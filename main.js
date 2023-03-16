@@ -74,20 +74,24 @@ function check(i,j){
 			verifD(grid[i][j]);
 			console.log("droite")
         }
-		else if (grid[i][j].voisins[k].estRelieD && grid[i][j].voisins[k].color==grid[i][j].color == colors[player]){
+		else if (grid[i][j].voisins[k].estRelieD && grid[i][j].voisins[k].color==grid[i][j].color){
 			verifD(grid[i][j]);
 			console.log(grid[i][j])
-			if (grid[i][j].voisins[k].estRelieG && grid[i][j].voisins[k].color==grid[i][j].color == colors[player]){
-				verifG(grid[i][j]);
-				console.log(grid[i][j])
+			for (let k1 = 0; k1 < 6; k1++){
+				if (grid[i][j].voisins[k1].estRelieG && grid[i][j].voisins[k1].color==grid[i][j].color){
+					verifG(grid[i][j]);
+					console.log(grid[i][j])
+				}
 			}
 		}
-		else if (grid[i][j].voisins[k].estRelieG && grid[i][j].voisins[k].color==grid[i][j].color == colors[player]){
+		else if (grid[i][j].voisins[k].estRelieG && grid[i][j].voisins[k].color==grid[i][j].color){
 			verifG(grid[i][j]);
 			console.log(grid[i][j])
-			if (grid[i][j].voisins[k].estRelieD && grid[i][j].voisins[k].color==grid[i][j].color == colors[player]){
-				verifD(grid[i][j]);
-				console.log(grid[i][j])
+			for (let k1 = 0; k1 < 6; k1++){
+				if (grid[i][j].voisins[k1].estRelieD && grid[i][j].voisins[k1].color==grid[i][j].color){
+					verifD(grid[i][j]);
+					console.log(grid[i][j])
+				}
 			}
 		}
     }
@@ -135,6 +139,14 @@ function drawGrid(){
             ctx.fillStyle = 'black';
             ctx.fillRect(i*50+(grid[i][j].y*25),j*50,1,50);
             ctx.fillRect(i*50+(grid[i][j].y*25),j*50,50,1);
+			if (grid[i][j].estRelieD){
+				ctx.fillStyle = 'green';
+				ctx.fillRect(i*50+(grid[i][j].y*25)+25,j*50,10,10);
+			}
+			if (grid[i][j].estRelieG){
+				ctx.fillStyle = 'magenta';
+				ctx.fillRect(i*50+(grid[i][j].y*25)+15,j*50,10,10);
+			}
         }
     }
 }
@@ -154,6 +166,7 @@ canvas.addEventListener("click", function(event) {
         grid[i][j].color = colors[player];
 		updateVoisins();
 		check(i,j);
+		console.log(grid[i][j].voisins)
 		victoryCheck();
 		if (player==1){
 			op=1;

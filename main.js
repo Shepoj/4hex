@@ -156,8 +156,8 @@ console.log(grid[5][3]);
 drawGrid();
 
 canvas.addEventListener("click", function(event) {
-    let y = event.clientY - canvas.offsetTop;
-    let x = event.clientX - canvas.offsetLeft - Math.round(y*25/50);
+    let y = event.pageY - canvas.offsetTop;
+    let x = event.pageX - canvas.offsetLeft - Math.round(y*25/50);
     let i = Math.round(x/50);
     let j = Math.floor(y/50);
     console.log(x,i,y,j);

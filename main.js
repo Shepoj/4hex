@@ -1,6 +1,8 @@
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 let player = 1;
+let winner = [false, 0]
+let gsize = 3;
 let op = 2;
 let colors = ["#ffffff","#f81717", "#1db6f0", "#f81717", "#1db6f0","#f81717", "#1db6f0",  "#660099"]
 
@@ -17,24 +19,24 @@ class Cell{
 }
 
 let grid = [];
-for (let i = 0; i < 13; i++){
+for (let i = 0; i < gsize+2; i++){
     grid.push([]);
-    for (let j = 0; j < 13; j++){
-        if ((i==0 && j==0) || (i==12 && j==12) || (i==0 && j==12) || (i==12 && j==0)){
+    for (let j = 0; j < gsize+2; j++){
+        if ((i==0 && j==0) || (i==gsize+1 && j==gsize+1) || (i==0 && j==gsize+1) || (i==gsize+1 && j==0)){
             grid[i].push(new Cell(i,j,7));
         }
         else { 
             if (i==0){
                 grid[i].push(new Cell(i,j,4));
             }
-			else if (i==12){
+			else if (i==gsize+1){
                 grid[i].push(new Cell(i,j,6));
             }
             else {
                 if (j==0){
                     grid[i].push(new Cell(i,j,3));
                 }
-				else if (j==12){
+				else if (j==gsize+1){
                     grid[i].push(new Cell(i,j,5));
                 }
                 else {
@@ -47,15 +49,15 @@ for (let i = 0; i < 13; i++){
 
 function updateVoisins(){
     grid[0][0].voisins = [grid[0][1],grid[1][0],grid[1][1]];
-    grid[0][12].voisins = [grid[0][11],grid[1][11],grid[1][12]];
-    grid[12][0].voisins = [grid[11][0],grid[11][1],grid[12][1]];
-    grid[12][12].voisins = [grid[11][11],grid[11][12],grid[12][11]];
-    for (let i = 1; i < 12; i++){
+    grid[0][gsize+1].voisins = [grid[0][gsize],grid[1][gsize],grid[1][gsize+1]];
+    grid[gsize+1][0].voisins = [grid[gsize][0],grid[gsize][1],grid[gsize+1][1]];
+    grid[gsize+1][gsize+1].voisins = [grid[gsize][gsize],grid[gsize][gsize+1],grid[gsize+1][gsize]];
+    for (let i = 1; i < gsize+1; i++){
         grid[i][0].voisins = [grid[i-1][0],grid[i+1][0],grid[i-1][1],grid[i][1]];
-        grid[i][12].voisins = [grid[i-1][12],grid[i+1][12],grid[i-1][11],grid[i][11]];
-        for (let j = 1; j < 12; j++){
+        grid[i][gsize+1].voisins = [grid[i-1][gsize+1],grid[i+1][gsize+1],grid[i-1][gsize],grid[i][gsize]];
+        for (let j = 1; j < gsize+1; j++){
             grid[0][j].voisins = [grid[0][j-1],grid[0][j+1],grid[1][j-1],grid[1][j]];
-            grid[12][j].voisins = [grid[12][j-1],grid[12][j+1],grid[11][j-1],grid[11][j]];
+            grid[gsize+1][j].voisins = [grid[gsize+1][j-1],grid[gsize+1][j+1],grid[gsize][j-1],grid[gsize][j]];
             grid[i][j].voisins = [grid[i-1][j],grid[i-1][j+1],grid[i+1][j],grid[i+1][j-1],grid[i][j+1],grid[i][j-1]];
         }
     }
@@ -117,23 +119,24 @@ function verifD(self){
 }
 
 function victoryCheck(){
-    for (let i = 1; i < 12; i++){
+    for (let i = 1; i < gsize+1; i++){
 		if (grid[i][0].estRelieG == true && grid[i][0].estRelieD==true){
 			console.log("Victoire du joueur 1");
-            
+            winner = [true,1];
         }
     }
-    for (let j = 1; j < 12; j++){
+    for (let j = 1; j < gsize+1; j++){
 		if (grid[0][j].estRelieG == true && grid[0][j].estRelieD==true){
 			console.log("Victoire du joueur 2");
+			winner = [true,2];
             
         }
     }
 }
 
 function drawGrid(){
-    for (let i = 0; i < 13; i++){  //final : remplacer 0 par 1 et 13 par 12 
-        for (let j = 0; j < 13; j++){
+    for (let i = 0; i < gsize+2; i++){  //final : remplacer 0 par 1 et gsize+2 par gsize+1
+        for (let j = 0; j < gsize+2; j++){
             ctx.fillStyle = grid[i][j].color;
             ctx.fillRect(i*50+(grid[i][j].y*25),j*50,50,50);
             ctx.fillStyle = 'black';
@@ -151,8 +154,17 @@ function drawGrid(){
     }
 }
 
+function playCoup(i,j,player){
+	grid[i][j].state = player;
+    grid[i][j].color = colors[player];
+	updateVoisins();
+	check(i,j);
+	console.log(grid[i][j].voisins)
+	drawGrid();
+	victoryCheck();
+}
+
 updateVoisins();
-console.log(grid[5][3]);
 drawGrid();
 
 canvas.addEventListener("click", function(event) {
@@ -161,13 +173,14 @@ canvas.addEventListener("click", function(event) {
     let i = Math.round(x/50);
     let j = Math.floor(y/50);
     console.log(x,i,y,j);
+	if (winner[0] && winner[1] != player){
+		location.reload();
+	}
     if (grid[i][j].state === 0){
-        grid[i][j].state = player;
-        grid[i][j].color = colors[player];
-		updateVoisins();
-		check(i,j);
-		console.log(grid[i][j].voisins)
-		victoryCheck();
+        playCoup(i,j,player);
+		if (winner[0] && winner[1]==player){
+			alert("Joueur "+ winner[1]+ " a gagné !");
+		}
 		if (player==1){
 			op=1;
 			player=2;
@@ -177,6 +190,5 @@ canvas.addEventListener("click", function(event) {
 			player=1; 
 		}
 	}
-    drawGrid();
+    
 });
-

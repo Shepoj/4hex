@@ -2,7 +2,7 @@ let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 let player = 1;
 let winner = [false, 0]
-let gsize = 3;
+let gsize = 11;
 let op = 2;
 let colors = ["#ffffff","#f81717", "#1db6f0", "#f81717", "#1db6f0","#f81717", "#1db6f0",  "#660099"]
 
